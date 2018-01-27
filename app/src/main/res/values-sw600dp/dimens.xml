@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="marginsmall">8dp</dimen>
+    <dimen name="textSize_default">18dp</dimen>
+    <dimen name="textSizemiddle">24dp</dimen>
+    <dimen name="autocompletetextbox">60dp</dimen>
+    <dimen name="otpbox">35dp</dimen>
+    <dimen name="categorytext">13dp</dimen>
+    <dimen name="textsmall">14dp</dimen>
+    <dimen name="logopadding">100dp</dimen>
+    <dimen name="loginbuttonwidth">150dp</dimen>
+    <dimen name="loginbuttonheight">50dp</dimen>
+    <dimen name="circleimagewidth">130dp</dimen>
+    <dimen name="closebutton_margin">65dp</dimen>
+    <dimen name="profileicon_padding">70dp</dimen>
+    <dimen name="scoreboxsize">80dp</dimen>
+
+    <dimen name="chip_padding">2dp</dimen>
+    <dimen name="chip_side_padding">6dp</dimen>
+    <dimen name="chip_spacing">4dp</dimen>
+    <dimen name="chip_line_spacing">4dp</dimen>
+    <dimen name="chip_corner_radius">16dp</dimen>
+</resources>
