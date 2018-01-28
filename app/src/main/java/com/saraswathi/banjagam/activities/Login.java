@@ -109,10 +109,9 @@ public class Login extends AppCompatActivity {
 
                     Intent intent = new Intent(
                             Login.this,
-                            Home.class);
+                            DashBoard.class);
 
                     Login.this.startActivity(intent);
-
 
 
                 } else {
@@ -449,7 +448,7 @@ public class Login extends AppCompatActivity {
 
                             Intent intent = new Intent(
                                     Login.this,
-                                    Home.class);
+                                    DashBoard.class);
 
                             Login.this.startActivity(intent);
 

@@ -85,7 +85,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
                 .build();
 
 
-        holder.productname.setText(categories.get(position).getCategoryName());
+       /* holder.productname.setText(categories.get(position).getCategoryName());
           try
         {
             loader.displayImage(global.deFaultBaseUrl+global.ApiImageUrl+categories.get(position).getCategoryName(),holder.product_image,options);
@@ -94,7 +94,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
         {
 
         }
-
+*/
 
 
 
@@ -107,7 +107,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
 
     @Override
     public int getItemCount() {
-        return categories.size();
+        return 10;
     }
 
 

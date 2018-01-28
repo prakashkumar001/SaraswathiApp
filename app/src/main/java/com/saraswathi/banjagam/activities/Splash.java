@@ -9,7 +9,10 @@ import android.widget.LinearLayout;
 
 import com.saraswathi.banjagam.R;
 import com.saraswathi.banjagam.common.GlobalClass;
+import com.saraswathi.banjagam.database.FoodType;
 import com.saraswathi.banjagam.interfaces.NetworkConnection;
+
+import static com.saraswathi.banjagam.helper.Helper.getHelper;
 
 
 /**
@@ -59,6 +62,35 @@ public class Splash extends AppCompatActivity implements NetworkConnection {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
 
 
+            for(int i=0;i<4;i++)
+            {
+                FoodType foodType=new FoodType();
+                foodType.setId(Long.parseLong(String.valueOf(i)));
+                if(i==0)
+                {
+                    foodType.setFoodType("BreakFast");
+                }else if(i==1)
+                {
+                    foodType.setFoodType("Lunch");
+                }else if(i==2)
+                {
+                    foodType.setFoodType("Dinner");
+                }else if(i==3)
+                {
+                    foodType.setFoodType("Beverages");
+                }
+                getHelper().getDaoSession().insertOrReplace(foodType);
+
+
+        }
+
+
+
+
+    }
 }

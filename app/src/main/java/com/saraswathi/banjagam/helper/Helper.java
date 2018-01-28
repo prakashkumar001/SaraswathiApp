@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.saraswathi.banjagam.database.Categories;
 import com.saraswathi.banjagam.database.DaoSession;
+import com.saraswathi.banjagam.database.FoodType;
 import com.saraswathi.banjagam.database.IpSettings;
 import com.saraswathi.banjagam.database.Product;
 import com.saraswathi.banjagam.database.ProductDao;
@@ -51,6 +52,15 @@ public class Helper {
         return qb.list();
 
     }
+
+    //getMenuItems
+    public List<FoodType> getFoodType() {
+
+        QueryBuilder<FoodType> qb = daoSession.queryBuilder(FoodType.class);
+        return qb.list();
+
+    }
+
 
     //getMenuItems
     public List<Product> getProductItems(String categoryId) {

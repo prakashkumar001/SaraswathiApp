@@ -85,6 +85,19 @@
 
 
 
+    <RadioGroup
+        android:id="@+id/rg_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rl_title"
+        android:layout_marginLeft="@dimen/marginsmall"
+        android:layout_marginRight="@dimen/marginsmall"
+        android:layout_marginTop="@dimen/categorytext"
+        android:orientation="horizontal">
+
+
+
+    </RadioGroup>
 
 
     <android.support.v7.widget.RecyclerView

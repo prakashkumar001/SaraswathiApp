@@ -4,14 +4,19 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -20,6 +25,7 @@ import com.saraswathi.banjagam.adapter.CategoryListAdapter;
 import com.saraswathi.banjagam.common.GlobalClass;
 import com.saraswathi.banjagam.database.Categories;
 
+import com.saraswathi.banjagam.database.FoodType;
 import com.saraswathi.banjagam.utils.WSUtils;
 
 
@@ -46,55 +52,81 @@ public class DashBoard extends AppCompatActivity {
     RelativeLayout cartRelativeLayout;
     GlobalClass global;
     public static  List<Categories> categoriesList;
+    public static  List<FoodType> foodType;
     LinearLayout layout;
-
+    RadioGroup radioGroup;
+    int backPressedCount = 0;
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dashboard);
-        global=(GlobalClass)getApplicationContext();
+        global = (GlobalClass) getApplicationContext();
         productListView = (RecyclerView) findViewById(R.id.productList);
-        cartcount=(TextView)findViewById(R.id.cartcount);
-        cartRelativeLayout=(RelativeLayout)findViewById(R.id.cartRelativeLayout);
-        layout=(LinearLayout)findViewById(R.id.layout);
+        cartcount = (TextView) findViewById(R.id.cartcount);
+        cartRelativeLayout = (RelativeLayout) findViewById(R.id.cartRelativeLayout);
+        layout = (LinearLayout) findViewById(R.id.layout);
+        radioGroup = (RadioGroup) findViewById(R.id.rg_header);
+
+        RadioGroup.LayoutParams rprms;
+
+
+        if (getHelper().getFoodType() != null) {
+            foodType = new ArrayList<>();
+            foodType = getHelper().getFoodType();
+
+            for (int i = 0; i < foodType.size(); i++) {
+                RadioButton radioButton = new RadioButton(this);
+                radioButton.setText(foodType.get(i).getFoodType());
+                radioButton.setTextSize(16);
+                radioButton.setPadding(5, 0, 0, 5);
+                radioButton.setChecked(i == 0);
+                radioButton.setId(i);
+                radioButton.setGravity(Gravity.CENTER);
+                radioButton.setTextColor(getResources().getColorStateList(R.color.rbtn_textcolor_selector));
+                radioButton.setButtonDrawable(null);
+                radioButton.setBackgroundResource(R.drawable.radio_selector_circle);
+                rprms = new RadioGroup.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+                radioGroup.addView(radioButton, rprms);
+
+
+            }
+
+
+            getCategoryList();
+
+            radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
+                    int id=i;
+
+                    getCategoryList();
 
 
 
+                }
+            });
+        }
 
-
-
-
-
-
-
-        cartRelativeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            cartRelativeLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
                 /*Intent i=new Intent(DashBoard.this,CartPage.class);
                 startActivity(i);*/
-                //showOrderDialog();
+                    //showOrderDialog();
 
+                }
+            });
+
+
+            if (global.cartList.size() > 0) {
+                cartcount.setText(String.valueOf(global.cartList.size()));
             }
-        });
 
 
-
-
-
-
-        if(global.cartList.size()>0)
-        {
-            cartcount.setText(String.valueOf(global.cartList.size()));
         }
-
-
-
-
-
-    }
 
 
     @Override
@@ -107,9 +139,26 @@ public class DashBoard extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent i=new Intent(DashBoard.this, Home.class);
-        startActivity(i);
-        finish();
+        if (backPressedCount == 1) {
+            ActivityCompat.finishAffinity(Home.this);
+        } else {
+            backPressedCount++;
+
+            new Thread() {
+                @Override
+                public void run() {
+                    //super.run();
+                    try {
+                        sleep(3000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } finally {
+                        backPressedCount = 0;
+                    }
+                }
+            }.start();
+        }
+
     }
 
 
@@ -202,6 +251,15 @@ public class DashBoard extends AppCompatActivity {
 
                     } catch (JSONException e) {
                         e.printStackTrace();
+
+                        adapter=new CategoryListAdapter(DashBoard.this,new ArrayList<Categories>());
+                        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),2);
+                        productListView.setLayoutManager(layoutManager);
+                        productListView.setItemAnimator(new DefaultItemAnimator());
+                        productListView.setNestedScrollingEnabled(false);
+                        productListView.setAdapter(adapter);
+
+
                     }
                 }
 
