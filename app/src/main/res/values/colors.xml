@@ -3,4 +3,5 @@
     <color name="colorPrimary">#FF9F00</color>
     <color name="colorPrimaryDark">#FF9F00</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="login_keypad_bg">#EFEFEF</color>
 </resources>

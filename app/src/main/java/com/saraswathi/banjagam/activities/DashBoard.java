@@ -140,7 +140,7 @@ public class DashBoard extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         if (backPressedCount == 1) {
-            ActivityCompat.finishAffinity(Home.this);
+            ActivityCompat.finishAffinity(DashBoard.this);
         } else {
             backPressedCount++;
 

@@ -3,6 +3,7 @@ package com.saraswathi.banjagam.adapter;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.saraswathi.banjagam.R;
+import com.saraswathi.banjagam.activities.ProductDashboard;
 import com.saraswathi.banjagam.common.GlobalClass;
 import com.saraswathi.banjagam.database.Categories;
 
@@ -96,6 +98,13 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
         }
 */
 
+       holder.itemView.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+             Intent i=new Intent(context,ProductDashboard.class);
+                context.startActivity(i);
+           }
+       });
 
 
 
