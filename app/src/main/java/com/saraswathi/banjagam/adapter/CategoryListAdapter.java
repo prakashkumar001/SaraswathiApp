@@ -87,7 +87,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
                 .build();
 
 
-       /* holder.productname.setText(categories.get(position).getCategoryName());
+        holder.productname.setText(categories.get(position).getCategoryName());
           try
         {
             loader.displayImage(global.deFaultBaseUrl+global.ApiImageUrl+categories.get(position).getCategoryName(),holder.product_image,options);
@@ -96,12 +96,12 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
         {
 
         }
-*/
 
        holder.itemView.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View view) {
              Intent i=new Intent(context,ProductDashboard.class);
+               i.putExtra("sub_id",categories.get(position).categoryUid);
                 context.startActivity(i);
            }
        });
@@ -116,7 +116,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
 
     @Override
     public int getItemCount() {
-        return 10;
+        return categories.size();
     }
 
 

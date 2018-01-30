@@ -297,7 +297,7 @@ ImageLoader loader;
 
     @Override
     public int getItemCount() {
-        return 10;
+        return products.size();
     }
 
 

@@ -94,21 +94,6 @@ public class DashBoard extends AppCompatActivity {
             }
 
 
-            getCategoryList();
-
-            radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
-                    int id=i;
-
-                    getCategoryList();
-
-
-
-                }
-            });
-        }
-
             cartRelativeLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -127,14 +112,28 @@ public class DashBoard extends AppCompatActivity {
 
 
         }
-
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        getCategoryList();
-    }
+        getCategoryList(String.valueOf(1));
+
+
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
+                    int id=i;
+
+                    getCategoryList(String.valueOf(id+1));
+
+
+
+                }
+            });
+        }
+
 
     @Override
     public void onBackPressed() {
@@ -167,7 +166,7 @@ public class DashBoard extends AppCompatActivity {
 
 
 
-    public void getCategoryList() {
+    public void getCategoryList(final String id) {
         class CategoryServer extends AsyncTask<String, String, String> {
             ProgressDialog dialog;
             String response = "";
@@ -186,12 +185,14 @@ public class DashBoard extends AppCompatActivity {
                 try {
 
 
-                    String requestURL = global.deFaultBaseUrl+global.ApiBaseUrl + "product/categories";
+                    String requestURL = global.deFaultBaseUrl+global.ApiBaseUrl + "subcategory";
                     WSUtils utils = new WSUtils();
+                    HashMap<String,String> data=new HashMap<>();
+                    data.put("main_cattid",id);
 
 
 
-                    response = utils.getResultFromHttpRequest(requestURL, "GET",new HashMap<String, String>());
+                    response = utils.getResultFromHttpRequest(requestURL, "POST",data);
 
                     System.out.println("SERVER REPLIED:" + response);
                     //{"status":"success","message":"Registration Successful","result":[],"statusCode":200}
@@ -218,28 +219,29 @@ public class DashBoard extends AppCompatActivity {
 
 
                     try {
-                        JSONObject object = new JSONObject(o);
-                        JSONArray array=object.getJSONArray("payload");
+
+                        JSONArray array=new JSONArray(o);
 
                         for(int i=0;i<array.length();i++)
                         {
                             JSONObject data=array.getJSONObject(i);
-                            String categoryId=data.getString("categoryId");
-                            String categoryName=data.getString("categoryName");
-                            String categoryUid=data.getString("categoryUid");
-                            String active=data.getString("active");
+                            String categoryId=data.getString("id");
+                            String categoryName=data.getString("sub_categoryname");
+                            String categoryTypeId=data.getString("main_catid");
+                            String active=data.getString("status");
 
                             Categories categories=new Categories();
                             categories.categoryId=(Long.parseLong(categoryId));
+                            categories.categoryUid=categoryId;
+                            categories.categoryTypeId=(categoryTypeId);
                             categories.categoryName=categoryName;
-                            categories.categoryUid=categoryUid;
                             categories.active=active;
 
                             getHelper().getDaoSession().insertOrReplace(categories);
 
                         }
 
-                        adapter=new CategoryListAdapter(DashBoard.this,new ArrayList<Categories>());
+                        adapter=new CategoryListAdapter(DashBoard.this,getHelper().getCategoryItems());
                         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),2);
                         productListView.setLayoutManager(layoutManager);
                         productListView.setItemAnimator(new DefaultItemAnimator());
@@ -252,12 +254,7 @@ public class DashBoard extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
 
-                        adapter=new CategoryListAdapter(DashBoard.this,new ArrayList<Categories>());
-                        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),2);
-                        productListView.setLayoutManager(layoutManager);
-                        productListView.setItemAnimator(new DefaultItemAnimator());
-                        productListView.setNestedScrollingEnabled(false);
-                        productListView.setAdapter(adapter);
+
 
 
                     }

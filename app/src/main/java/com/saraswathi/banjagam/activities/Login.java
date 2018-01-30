@@ -58,6 +58,12 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
         global = (GlobalClass) getApplicationContext();
+
+        if (getHelper().getIpAddress() != null)
+        {
+            global.deFaultBaseUrl="http://"+getHelper().getIpAddress().getBaseIpAdress();
+
+        }
         initialize();
 
 

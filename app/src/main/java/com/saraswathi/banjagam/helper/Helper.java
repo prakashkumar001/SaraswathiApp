@@ -63,10 +63,10 @@ public class Helper {
 
 
     //getMenuItems
-    public List<Product> getProductItems(String categoryId) {
+    public List<Product> getProductItems(String subcategoryId) {
 
         QueryBuilder<Product> qb = daoSession.queryBuilder(Product.class);
-        qb.where(ProductDao.Properties.CategoryUid.eq(categoryId));
+        qb.where(ProductDao.Properties.CategoryUid.eq(subcategoryId));
 
         return qb.list();
 

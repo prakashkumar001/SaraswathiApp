@@ -12,16 +12,19 @@ import org.greenrobot.greendao.annotation.Id;
 public class Categories {
     @Id
     public Long categoryId;
-
     public String categoryName;
+    public String categoryImage;
     public String categoryUid;
+    public String categoryTypeId;
     public String active;
-    @Generated(hash = 250281246)
-    public Categories(Long categoryId, String categoryName, String categoryUid,
-            String active) {
+    @Generated(hash = 427374877)
+    public Categories(Long categoryId, String categoryName, String categoryImage,
+            String categoryUid, String categoryTypeId, String active) {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
+        this.categoryImage = categoryImage;
         this.categoryUid = categoryUid;
+        this.categoryTypeId = categoryTypeId;
         this.active = active;
     }
     @Generated(hash = 267348489)
@@ -39,6 +42,12 @@ public class Categories {
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
     }
+    public String getCategoryImage() {
+        return this.categoryImage;
+    }
+    public void setCategoryImage(String categoryImage) {
+        this.categoryImage = categoryImage;
+    }
     public String getCategoryUid() {
         return this.categoryUid;
     }
@@ -51,6 +60,11 @@ public class Categories {
     public void setActive(String active) {
         this.active = active;
     }
-
+    public String getCategoryTypeId() {
+        return this.categoryTypeId;
+    }
+    public void setCategoryTypeId(String categoryTypeId) {
+        this.categoryTypeId = categoryTypeId;
+    }
 
 }

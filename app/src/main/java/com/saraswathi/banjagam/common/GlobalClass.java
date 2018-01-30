@@ -8,6 +8,7 @@ import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+
 import com.saraswathi.banjagam.database.DaoMaster;
 import com.saraswathi.banjagam.database.DaoSession;
 import com.saraswathi.banjagam.database.Product;
@@ -29,8 +30,8 @@ public class GlobalClass extends Application{
     public static ArrayList<Product> cartList=new ArrayList<>();
     public static String BadgeCount="0";
     public static String bluetoothStatus=null;
-    public static String ApiBaseUrl=":8080/services/";    //192.168.1.110
-    public static String ApiImageUrl=":8080/images/";
+    public static String ApiBaseUrl="/prakash/foodcourt/index.php/mobile/";    //192.168.1.110
+    public static String ApiImageUrl="/prakash/foodcourt/index.php/mobile/";
 
     Database db;
     public DaoSession daoSession;
