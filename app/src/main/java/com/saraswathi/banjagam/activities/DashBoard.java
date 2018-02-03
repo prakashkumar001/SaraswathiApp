@@ -1,7 +1,7 @@
 package com.saraswathi.banjagam.activities;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
@@ -10,10 +10,14 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -21,11 +25,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.saraswathi.banjagam.R;
+import com.saraswathi.banjagam.adapter.CartAdapter;
 import com.saraswathi.banjagam.adapter.CategoryListAdapter;
 import com.saraswathi.banjagam.common.GlobalClass;
 import com.saraswathi.banjagam.database.Categories;
 
 import com.saraswathi.banjagam.database.FoodType;
+import com.saraswathi.banjagam.database.Product;
 import com.saraswathi.banjagam.utils.WSUtils;
 
 
@@ -34,7 +40,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -56,6 +65,8 @@ public class DashBoard extends AppCompatActivity {
     LinearLayout layout;
     RadioGroup radioGroup;
     int backPressedCount = 0;
+    public static TextView totalprice,subtotal;
+    public  static  RecyclerView cartview;
 
 
     @Override
@@ -94,46 +105,48 @@ public class DashBoard extends AppCompatActivity {
             }
 
 
-            cartRelativeLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                /*Intent i=new Intent(DashBoard.this,CartPage.class);
-                startActivity(i);*/
-                    //showOrderDialog();
-
-                }
-            });
-
-
-            if (global.cartList.size() > 0) {
-                cartcount.setText(String.valueOf(global.cartList.size()));
-            }
-
 
         }
+
+
     }
+
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        getCategoryList(String.valueOf(1));
-
-
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
-                    int id=i;
-
-                    getCategoryList(String.valueOf(id+1));
-
-
-
-                }
-            });
+        if (global.cartList.size() > 0) {
+            cartcount.setText(String.valueOf(global.cartList.size()));
         }
 
+        cartRelativeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+               showdialog();
+
+
+
+            }
+        });
+
+
+
+
+        getCategoryList("1");
+
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
+                int id=i;
+
+                getCategoryList(String.valueOf(id+1));
+
+
+
+            }
+        });
+    }
 
     @Override
     public void onBackPressed() {
@@ -213,7 +226,15 @@ public class DashBoard extends AppCompatActivity {
                 if (dialog != null && dialog.isShowing())
                     dialog.dismiss();
 
+                List<Categories> categoriesList=new ArrayList<>();
+
                 if (o == null ) {
+                    adapter=new CategoryListAdapter(DashBoard.this,categoriesList);
+                    RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),2);
+                    productListView.setLayoutManager(layoutManager);
+                    productListView.setItemAnimator(new DefaultItemAnimator());
+                    productListView.setNestedScrollingEnabled(false);
+                    productListView.setAdapter(adapter);
 
                 }else {
 
@@ -222,32 +243,51 @@ public class DashBoard extends AppCompatActivity {
 
                         JSONArray array=new JSONArray(o);
 
-                        for(int i=0;i<array.length();i++)
+
+                        if(array.length()==0)
                         {
-                            JSONObject data=array.getJSONObject(i);
-                            String categoryId=data.getString("id");
-                            String categoryName=data.getString("sub_categoryname");
-                            String categoryTypeId=data.getString("main_catid");
-                            String active=data.getString("status");
+                            adapter=new CategoryListAdapter(DashBoard.this,categoriesList);
+                            RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),2);
+                            productListView.setLayoutManager(layoutManager);
+                            productListView.setItemAnimator(new DefaultItemAnimator());
+                            productListView.setNestedScrollingEnabled(false);
+                            productListView.setAdapter(adapter);
 
-                            Categories categories=new Categories();
-                            categories.categoryId=(Long.parseLong(categoryId));
-                            categories.categoryUid=categoryId;
-                            categories.categoryTypeId=(categoryTypeId);
-                            categories.categoryName=categoryName;
-                            categories.active=active;
+                        }else {
+                            for(int i=0;i<array.length();i++)
+                            {
+                                JSONObject data=array.getJSONObject(i);
+                                String categoryId=data.getString("id");
+                                String categoryName=data.getString("sub_categoryname");
+                                String categoryTypeId=data.getString("main_catid");
+                                String categoryImage=data.getString("books_url");
 
-                            getHelper().getDaoSession().insertOrReplace(categories);
+                                String active=data.getString("status");
+
+                                Categories categories=new Categories();
+                                categories.categoryId=(Long.parseLong(categoryId));
+                                categories.categoryUid=categoryId;
+                                categories.categoryTypeId=categoryTypeId;
+                                categories.categoryImage=categoryImage;
+                                categories.categoryName=categoryName;
+                                categories.active=active;
+
+                                getHelper().getDaoSession().insertOrReplace(categories);
+
+                            }
+
+                            categoriesList=getHelper().getCategoryItems();
+
+                            adapter=new CategoryListAdapter(DashBoard.this,categoriesList);
+                            RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),2);
+                            productListView.setLayoutManager(layoutManager);
+                            productListView.setItemAnimator(new DefaultItemAnimator());
+                            productListView.setNestedScrollingEnabled(false);
+                            productListView.setAdapter(adapter);
+
+
 
                         }
-
-                        adapter=new CategoryListAdapter(DashBoard.this,getHelper().getCategoryItems());
-                        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),2);
-                        productListView.setLayoutManager(layoutManager);
-                        productListView.setItemAnimator(new DefaultItemAnimator());
-                        productListView.setNestedScrollingEnabled(false);
-                        productListView.setAdapter(adapter);
-
 
 
 
@@ -273,7 +313,236 @@ public class DashBoard extends AppCompatActivity {
         new CategoryServer().execute();
     }
 
+    public void showdialog()
+    {
 
+
+
+
+
+        final String subtotals;
+        // custom dialog
+        final Dialog dialog = new Dialog(DashBoard.this, R.style.ThemeDialogCustom);
+
+
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.cartpage);
+        dialog.getWindow().setGravity(Gravity.CENTER);
+        //dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+        dialog.show();
+        //dialog.getWindow().setLayout((8 * width) / 10, (8 * height) / 10);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+
+        String rupee = getResources().getString(R.string.Rupee_symbol);
+
+        cartview=(RecyclerView)dialog.findViewById(R.id.cartlist) ;
+        totalprice=(TextView) dialog.findViewById(R.id.total_price) ;
+        subtotal=(TextView) dialog.findViewById(R.id.sub_total) ;
+
+
+        ImageView payment=(ImageView)dialog.findViewById(R.id.payment);
+        payment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //wifi();
+
+                Checkout(dialog);
+
+
+            }
+        });
+        final int columns = getResources().getInteger(R.integer.grid_column);
+
+        CartAdapter adapter=new CartAdapter(DashBoard.this,dialog);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(DashBoard.this);
+        cartview.setLayoutManager(layoutManager);
+        cartview.setItemAnimator(new DefaultItemAnimator());
+        cartview.setNestedScrollingEnabled(false);
+        cartview.setAdapter(adapter);
+
+        subtotal.setText(rupee+" "+String.format("%.2f",totalvalue()));
+        subtotals=String.format("%.2f",totalvalue());
+
+
+        ImageView iv_close=(ImageView)dialog.findViewById(R.id.iv_close);
+        iv_close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                dialog.dismiss();
+
+            }
+        });
+
+        // gst_amount = ( adapter.totalvalue() * 18 ) / 100;
+
+        double total=totalvalue()+totalTaxAmount();
+        double roundofftotal=Math.round(total);
+        totalprice.setText(String.format("%.2f",roundofftotal));
+
+    }
+
+
+
+
+
+    public double totalvalue()
+    {
+        double totalValue=0.0;
+        for(int i=0;i<global.cartList.size();i++)
+        {
+            String price=global.cartList.get(i).getPrice();
+
+            double value= Double.parseDouble(price) * global.cartList.get(i).getQuantity();
+            totalValue=totalValue + value;
+
+        }
+
+        return totalValue;
+    }
+
+    public double totalTaxAmount()
+    {
+        double totalValue=0.0;
+        for(int i=0;i<global.cartList.size();i++)
+        {
+            String price=global.cartList.get(i).getTaxAmount();
+
+            double value= Double.parseDouble(price);
+            totalValue=totalValue + value;
+
+        }
+
+        return totalValue;
+    }
+
+
+
+    public void Checkout(final Dialog orderdialog) {
+        class CheckOutService extends AsyncTask<String, String, String> {
+            ProgressDialog dialog;
+            String response = "";
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                dialog = new ProgressDialog(DashBoard.this);
+                dialog.setMessage(getString(R.string.loading));
+                dialog.setCancelable(false);
+                dialog.show();
+
+
+            }
+
+            @Override
+            protected String doInBackground(String[] params) {
+                try {
+
+
+                    String requestURL = global.deFaultBaseUrl+global.ApiBaseUrl + "cart/checkout";
+                    WSUtils utils = new WSUtils();
+
+                    JSONObject object;
+
+                    double totaltaxamount=totalTaxAmount();
+                    double orderamount=totalvalue();
+                    double totalamount=orderamount+totaltaxamount;
+                    JSONArray cartList=new JSONArray();
+                    for(int i=0;i<global.cartList.size();i++)
+                    {
+                        Product product=global.cartList.get(i);
+                        try {
+                            object=new JSONObject();
+                            object.put("type",product.categoryUid);
+                            object.put("productUid",product.productUid);
+                            object.put("quantity",product.quantity);
+                            object.put("unitPrice",Double.parseDouble(product.price));
+                            object.put("taxPercent",Double.parseDouble(product.taxPercent));
+                            object.put("taxAmt",Double.parseDouble(product.taxAmount));
+                            object.put("totalAmt",Double.parseDouble(product.totalprice));
+
+                            cartList.put(object);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    JSONArray arraydetails=new JSONArray();
+
+                    JSONObject result=new JSONObject();
+                    result.put("user_id","1");
+                    result.put("order_items",cartList);
+                    result.put("totalTaxAmt",totaltaxamount);
+                    result.put("orderAmt",orderamount);
+                    result.put("totalCartAmt",Math.round(totalamount));
+                    result.put("order_date",getDateTime());
+
+
+                    arraydetails.put(result);
+
+
+
+                    //usbPrinter();
+
+
+
+
+                    response = utils.responsedetailsfromserver(requestURL, arraydetails.toString());
+
+                    System.out.println("SERVER REPLIED:" + response);
+                    //{"status":"success","message":"Registration Successful","result":[],"statusCode":200}
+                    // {"status":"success","message":"Logged in Successfully","result":{"statusCode":4},"statusCode":200}
+                } catch (Exception ex) {
+                    Log.i("ERROR", "ERROR" + ex.toString());
+                }
+
+                return response;
+            }
+
+
+            @Override
+            protected void onPostExecute(String o) {
+
+                if (dialog != null && dialog.isShowing())
+
+
+                    if (o == null ) {
+
+                    }else {
+                        orderdialog.dismiss();
+                        try {
+                            JSONObject object=new JSONObject(o);
+                            JSONArray result=object.getJSONArray("payload");
+                            JSONObject object1=result.getJSONObject(0);
+                            String orderStatus=object1.getString("orderStatus");
+                            String orderUId=object1.getString("orderUId");
+
+                            if(orderStatus.equalsIgnoreCase("COMPLETED") ) {
+
+                            }
+                        } catch (JSONException e) {
+
+                        }
+
+
+                    }
+
+
+            }
+        }
+        new CheckOutService().execute();
+    }
+
+    private String getDateTime() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyy hh:mm:aa");
+        Date date = new Date();
+        return dateFormat.format(date);
+    }
 }
 
 

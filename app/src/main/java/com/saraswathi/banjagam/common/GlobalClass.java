@@ -30,8 +30,8 @@ public class GlobalClass extends Application{
     public static ArrayList<Product> cartList=new ArrayList<>();
     public static String BadgeCount="0";
     public static String bluetoothStatus=null;
-    public static String ApiBaseUrl="/prakash/foodcourt/index.php/mobile/";    //192.168.1.110
-    public static String ApiImageUrl="/prakash/foodcourt/index.php/mobile/";
+    public static String ApiBaseUrl=":8080/prakash/foodcourt/index.php/mobile/";    //192.168.1.110
+    public static String ApiImageUrl=":8080/prakash/foodcourt/uploads/";
 
     Database db;
     public DaoSession daoSession;

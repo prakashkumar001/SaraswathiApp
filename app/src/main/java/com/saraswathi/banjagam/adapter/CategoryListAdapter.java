@@ -90,7 +90,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
         holder.productname.setText(categories.get(position).getCategoryName());
           try
         {
-            loader.displayImage(global.deFaultBaseUrl+global.ApiImageUrl+categories.get(position).getCategoryName(),holder.product_image,options);
+            loader.displayImage(global.deFaultBaseUrl+global.ApiImageUrl+"subcategory/"+categories.get(position).getCategoryImage(),holder.product_image,options);
 
         }catch (Exception e)
         {
