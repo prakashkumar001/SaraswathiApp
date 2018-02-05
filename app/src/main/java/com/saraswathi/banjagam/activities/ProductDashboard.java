@@ -156,7 +156,8 @@ public class ProductDashboard extends AppCompatActivity {
 
                     try {
 
-                        JSONArray array=new JSONArray(o);
+                        JSONObject object=new JSONObject(o);
+                        JSONArray array=object.getJSONArray("menuitem");
 
                         for(int i=0;i<array.length();i++)
                         {
@@ -169,7 +170,8 @@ public class ProductDashboard extends AppCompatActivity {
                             String productImage=data.getString("books_url");
 
                             Product categories=new Product();
-                            categories.productId=(Long.parseLong(id));
+                            categories.productId=Long.parseLong(id);
+                            categories.productUid=id;
                             categories.categoryUid=subcategoryId;
                             categories.price=price;
                             categories.totalprice=price;
@@ -349,7 +351,7 @@ public class ProductDashboard extends AppCompatActivity {
                 try {
 
 
-                    String requestURL = global.deFaultBaseUrl+global.ApiBaseUrl + "cart/checkout";
+                    String requestURL = global.deFaultBaseUrl+global.ApiBaseUrl + "orders";
                     WSUtils utils = new WSUtils();
 
                     JSONObject object;
@@ -381,12 +383,13 @@ public class ProductDashboard extends AppCompatActivity {
                     JSONArray arraydetails=new JSONArray();
 
                     JSONObject result=new JSONObject();
-                    result.put("user_id","1");
-                    result.put("order_items",cartList);
+                    result.put("userId","0001");
+                    result.put("cartItems",cartList);
                     result.put("totalTaxAmt",totaltaxamount);
                     result.put("orderAmt",orderamount);
                     result.put("totalCartAmt",Math.round(totalamount));
-                    result.put("order_date",getDateTime());
+                    result.put("venueUid", "Saraswathi");
+
 
 
                     arraydetails.put(result);
@@ -396,9 +399,14 @@ public class ProductDashboard extends AppCompatActivity {
                     //usbPrinter();
 
 
+                    HashMap<String,String> data=new HashMap<>();
+                    String orderdetail=arraydetails.toString();
+                    data.put("orders",orderdetail);
+                    data.put("user_id","1");
+                    data.put("order_date",getDateTime());
 
 
-                    response = utils.responsedetailsfromserver(requestURL, arraydetails.toString());
+                    response = utils.responsedetailsfromserver(requestURL, data.toString());
 
                     System.out.println("SERVER REPLIED:" + response);
                     //{"status":"success","message":"Registration Successful","result":[],"statusCode":200}
@@ -416,6 +424,7 @@ public class ProductDashboard extends AppCompatActivity {
 
                 if (dialog != null && dialog.isShowing())
 
+                    dialog.dismiss();
 
                     if (o == null ) {
 
@@ -445,7 +454,7 @@ public class ProductDashboard extends AppCompatActivity {
     }
 
     private String getDateTime() {
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyy hh:mm:aa");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
         return dateFormat.format(date);
     }
